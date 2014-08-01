@@ -1,0 +1,10 @@
+xcopy /yr "$(LEAP_SDK)\lib\x64\Leapd.dll" "$(TargetDir)"
+xcopy /yr "$(LEAP_SDK)\lib\x64\msvcp120d.dll" "$(TargetDir)"
+xcopy /yr "$(LEAP_SDK)\lib\x64\msvcr120d.dll" "$(TargetDir)"
+
+
+
+
+xcopy /yr "C:\Interface SDKs\LeapDevelopementKit\LeapSDK\lib\x64\Leapd.dll" "$(TargetDir)"
+xcopy /yr "C:\Interface SDKs\LeapDevelopementKit\LeapSDK\lib\x64\msvcp120d.dll" "$(TargetDir)"
+xcopy /yr "C:\Interface SDKs\LeapDevelopementKit\LeapSDK\lib\x64\msvcr120d.dll" "$(TargetDir)"

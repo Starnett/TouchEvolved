@@ -1,0 +1,52 @@
+
+Partner1
+-----------
+Name: Stephen Arnett
+EID: sja696
+
+
+
+Slip days used: 0
+
+
+Include any special compile instructions here
+--------------------------------------------------------------
+if The rotation of the scene is too quick or does nothing (it rotated very slowly on my computer so the angle of rotation was set to 2*PI)
+go to line 277 in drawing.c to change the angle of rotation each repetition
+
+
+Put the results of the Performance Test here.  
+--------------------------------------------------------------
+Cube using glut (solid) 513.78 sec
+Cube using glut (wire) 495.89 sec
+Cube using quadrilaterals 494.00 sec
+Cube using quadrilateral arrays 493.61 sec
+Cone using glut (solid)   493.59 sec
+Cone using glut (wire)    495.89 sec
+Cone using triangle 496.75 sec
+Cone using triangle arrays 493.92 sec
+Cone using calculated triangles  493.52 sec
+
+Though they appear to have run at almost the same speeds, making cones using triangles and making a cone using glut took longer than the rest of them.
+
+Their running times are significantly high for what I believe a computer is capable of. I think maybe it's because I did this test remotely though with Xming and a PuTTY like ssh secure shell. Other than that I don't know why they would be so high.
+ 
+ 
+Mention any interesting items you added which deserves extra credit
+------------------------------------------------------------------------------------------------
+for the free scene, I added lighting, texture, and animation.
+Press L to change the color scheme of the triangle (there are 4 total)
+press f to rotate the scene. Scene must finish full rotation to continue giving input commands
+pressing l (lowercase L) will give better lighting to the scene but will make it harder to see how the lighting changes as they rotate
+
+
+In case your code does not compile or is incomplete, describe the parts you implemented to get partial credits
+---------------------------------------------------------------------------------------------------------------------------------------------------------
+when pressing f the three triangular prisms should rotate on their own axis. 
+when pressing L, the three prisms change colors.
+if the scene remains dark during the rotation the WHOLE time, then something in the lighting went wrong but it was working fine when I submitted it.
+The shading differences can be seen better if the prisms start out surrounded in shadow and then rotated but by pressing 'l' (lowercase L) will give better lighting to the scene but will make it harder to see how the lighting changes as they rotate
+
+My connection and rendering was done remotely to the UT servers though ssh secure shell and a PuTTY with xming, so my animations and changes took a good while to complete in Display Mode 9. As a result it may not even seem to rotate since the rotation angle needed to be set to 2PI in order to make it move quickly fast enough, but I'm not sure how this will affect it during grading.
+
+
