@@ -1,0 +1,1 @@
+10/27/14 Jason copied LeapControl.* files into GLUT Apparatus to try getting VS2013 to compile the project
