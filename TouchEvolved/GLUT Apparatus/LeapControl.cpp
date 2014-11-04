@@ -68,6 +68,7 @@ Vector handSpeed;
 enum TranslateState { NONE, START, UPDATE, END };
 TranslateState translateState = NONE;
 
+
 //Pinch settings
 const float MIN_PINCH_STRENGTH = 0.25f;
 const float PINCH_MIN_ROLL_THRESHOLD = 0.0f * DEG_TO_RAD;
