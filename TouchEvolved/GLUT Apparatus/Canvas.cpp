@@ -11,6 +11,8 @@
 
 #include "common.h"
 
+#include <iostream>
+#include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -19,8 +21,11 @@
 #include "mouse.h"
 #include "LeapControl.h"
 #include "Leap.h"
+#include "LeapMath.h"
+#include <time.h>
 
 using namespace Leap;
+using namespace std;
 #define PI 3.14159265358979323846
 
 /* Function Declarations */
@@ -29,6 +34,7 @@ void myInit (int argc, char **argv);
 void myDisplay (void);
 void myReshape (int, int);
 void myKeyHandler (unsigned char, int, int);
+extern void onFrame(const Controller&);
 
 void resetCamera(void);
 int endCanvas(int status);
@@ -68,7 +74,21 @@ bool rotate_cylinder = true;
 LeapListener myLeapListener;
 Controller myLeapController;
 
+/*
+Vector swipeStartPos;
+Vector swipeEndPos;
+//Hand currentHand;
 
+//int numFingersExtended = 0;
+
+time_t lastGestureTime = time(NULL);
+time_t currentTime = time(NULL);
+//time(&lastGestTime);
+
+const int SWIPE_MIN_LENGTH = 50;
+const int SWIPE_MIN_VELOCITY = 200;
+const float LAST_GESTURE_DELAY = 0.5f;
+*/
 
 /*************************************************************
  * Global Variables / Constants
@@ -82,8 +102,6 @@ Controller myLeapController;
 /* The canvas's width and height, in pixels */
 int win_width = 500;
 int win_height = 500;
-
-
 
 /* The dimensions of the viewing frustum */
 GLfloat fleft   = -1.0;
@@ -106,6 +124,10 @@ int calc_tri_changed = 0;
 #define X_AXIS			0
 #define Y_AXIS			1
 #define Z_AXIS			2
+
+const float BASE_ROTATE_SPEED = 0.25f;
+const float BASE_ZOOM_SPEED = 0.1f;
+
 
 /*************************************************************
  * End Global Variables / Constants
@@ -257,6 +279,8 @@ void myReshape (int x, int y) {
 }
 
 
+float rotXDeg = 0; 
+
 /*
  * The rotation is specified in degrees about a certain axis of
  * the original model.
@@ -272,14 +296,20 @@ void rotateCamera(double deg, int axis) {
 	y = 0;
 	z = 0;
 
-	if (axis == X_AXIS) {
-		x = 1.0f;
-	} else if (axis == Y_AXIS) {
+	if (axis == X_AXIS) 
+	{
+		x = 1.0f;		
+	} 
+	else if (axis == Y_AXIS) 
+	{
 		y = 1.0f;
-	} else if (axis == Z_AXIS) {
+
+	} 
+	else if (axis == Z_AXIS) 
+	{
 		z = 1.0f;
 	}
- 
+	rotXDeg += deg;
 	glRotatef(deg, x, y, z);
 }
 
@@ -381,15 +411,33 @@ void performanceTest(void) {
 		(end - start) / 1000.0f);
 }
 
+void myIdleFunc() {
+
+	/* This works: it rotates the object
+	
+	unsigned char rotatePosX = ',', rotateNegX = '<';
+	unsigned char rotatePosY = '.', rotateNegY = '>';
+	unsigned char rotatePosZ = '/', rotateNegZ = '?';
+	myKeyHandler(rotatePosX, 0, 0);
+
+	*/
+	const Frame frame = myLeapController.frame();
+	
+	if (!frame.isValid()) return;
+	
+	myLeapListener.handleGestures(frame);
+
+
+}
 
 /* Handle user input */
-void myKeyHandler(unsigned char ch, int x, int y) {
+void myKeyHandler(unsigned char ch, int x = 1, int y = 1) {
 	
 	
 	switch(ch) {
 		case 'c':
 			resetCamera();
-			printf("Camera reset.\n");
+			printf("reset.\n");
 			break;
 
 		case 'C':
@@ -422,37 +470,39 @@ void myKeyHandler(unsigned char ch, int x, int y) {
 			break;
 
 		case ',':
-			rotateCamera(5, X_AXIS);
+			//std::cout << "call rotateCamera(5)" << std::endl;
+			rotateCamera(x * BASE_ROTATE_SPEED, X_AXIS);
 			break;
 
 		case '<':
-			rotateCamera(-5, X_AXIS);
+			//std::cout << "call rotateCamera(-5)" << std::endl;
+			rotateCamera(-x * BASE_ROTATE_SPEED, X_AXIS);
 			break;
 
 		case '.':
-			rotateCamera(5, Y_AXIS);
+			rotateCamera(x * BASE_ROTATE_SPEED, Y_AXIS);
 			break;
 
 		case '>':
-			rotateCamera(-5, Y_AXIS);
+			rotateCamera(-x * BASE_ROTATE_SPEED, Y_AXIS);
 			break;
 
 		case '/':
-			rotateCamera(5, Z_AXIS);
+			rotateCamera(x * BASE_ROTATE_SPEED, Z_AXIS);
 			break;
 
 		case '?':
-			rotateCamera(-5, Z_AXIS);
+			rotateCamera(-x *BASE_ROTATE_SPEED, Z_AXIS);
 			break;
 
 		case '+':
 			/* Zoom in */
-			zoomCamera(-0.1);
+			zoomCamera(-x * BASE_ZOOM_SPEED);
 			break;
 
 		case '=':
 			/* Zoom out */
-			zoomCamera(0.1);
+			zoomCamera(x * BASE_ZOOM_SPEED);
 			break;
 
 		case 'z':
@@ -627,7 +677,9 @@ void myKeyHandler(unsigned char ch, int x, int y) {
 	 * If control reaches here, the key press was recognized.  Refresh
 	 * the screen, since most key presses change the display in some way.
 	 */
+	///printf("breaking from key press\n");
 	myDisplay();
+	//printf("MY DISPLAY IS FINISHED\,");
 
 	return;
 }
@@ -663,9 +715,7 @@ int main(int argc, char **argv)
 	glutKeyboardFunc(myKeyHandler);
 	glutMouseFunc(myMouseButton);
 	glutMotionFunc(myMouseMotion);
-
-	// glutIdleFunc(myDisplay);
-	
+	glutIdleFunc(myIdleFunc);	
 	
 	/* User specific initialization */
 	myInit(argc, argv);
@@ -676,6 +726,7 @@ int main(int argc, char **argv)
 	myLeapController.addListener(myLeapListener);
 	if (argc > 1 && strcmp(argv[1], "--bg") == 0)
 		myLeapController.setPolicyFlags(Leap::Controller::POLICY_BACKGROUND_FRAMES);
+	
 
 	printf("\n");
 	print_disp_mode();

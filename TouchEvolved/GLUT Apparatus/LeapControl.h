@@ -23,6 +23,15 @@ class LeapListener : public Listener
 		virtual void handleKeyTapGesture(const Gesture&);
 		virtual void handleScreenTapGesture(const Gesture&);
 
+		virtual void handleRotation(const Hand);
+		virtual void handleTranslation(const Hand);
+		virtual void handlePinchZoom(const Hand);
+		virtual void handleTouchEmulation(const Frame&);
+		virtual void handleGestures(const Frame&);
+		virtual void handleInteractionBox(const Frame&);
+
+		virtual bool checkExtendedFingersCount(int);
+		virtual void checkHandRoll(const Hand);
 };
 
 
